@@ -10,28 +10,32 @@ board.on("ready", function() {
     // LCD pin name  RS  EN  DB4 DB5 DB6 DB7
     pins: ['GPIO25', 'GPIO24', 'GPIO23', 'GPIO17', 'GPIO27', 'GPIO22'],
   });
+  var multi = new five.Multi({
+    controller: "BMP180"
+  });
 
   /*var frame = 1;
   var frames = [":runninga:", ":runningb:"];
   var row = 0;
   var col = 0;*/
 
-  var multi = new five.Multi({
-    controller: "BMP080"
+  /*var multi = new five.Multi({
+    controller: "BMP180"
   });
   var temp, pressure, altitute;
   multi.on("change", function() {
     temp = this.thermometer.celsius;
     pressure = this.barometer.pressure;
     altitute = this.altimeter.meters;
-  });
+  });*/
 
   var runner = Runner(lcd);
+  var sensor = Sensor_bmp080(multi);
 
-  
+
   /*
   lcd.useChar("runninga");
-  lcd.useChar("runningb");  
+  lcd.useChar("runningb");
 
   this.loop(300, function() {
     lcd.clear().cursor(row, col).print(
@@ -46,11 +50,49 @@ board.on("ready", function() {
     }
   });*/
 
-  board.loop(300, function(stop) {
-    runned.next();
-  });
+    var widgets = [ runner, sensor ];
+    var currentWidget = 0;
+    setInterval(() => {
+     widgets[currentWidget].stop();
+     currentWidget = currentWidget+1 > widgets.length ? 0 : currentWidget + 1;
+    }, 5000);
+    this.repl.inject({
+        lcd, runner, sensor
+    });
 
 });
+function Sensor_bmp080(multi) {
+  var temp, pressure, altitute;
+  multi.on("change", function() {
+    temp = this.thermometer.celsius;
+    pressure = this.barometer.pressure;
+    altitute = this.altimeter.meters;
+  });
+
+  var stopFlag;
+    var next = function() {
+        lcd.clear();
+        lcd.print("temp & pressure");
+        lcd.cursor(1, 0);
+        lcd.print(`${temp} ${pressure}`);
+    }
+    return {
+        stop() {
+            stopFlag = true;
+        },
+        run() {
+          stopFlag = false;
+          return board.loop(1000, function(stopLoop) {
+              if (stopFlag) {
+                stopLoop();
+                return;
+              }
+            next();
+          });
+        }
+    }
+
+}
 
 function Runner(lcd) {
   var frame = 1;
@@ -68,11 +110,9 @@ function Runner(lcd) {
   lcd.useChar("runninga");
   lcd.useChar("runningb");
 
-  var stop = false;
-
-  return {
-    next() {
-      if (stop) {
+  var stopFlag;
+  var next = function() {
+      if (stopFlag) {
         return;
       };
 
@@ -86,12 +126,22 @@ function Runner(lcd) {
           row = 0;
         }
       }
-    },
+   };
+
+  return {
+
     stop() {
-      stop = true;
+        stopFlag = true;
     },
     run() {
-      stop = false;
+      stopFlag = false;
+      return board.loop(300, function(stopLoop) {
+          if (stopFlag) {
+            stopLoop();
+            return;
+          }
+          next();
+      });
     }
   }
 }

@@ -11,6 +11,48 @@ board.on("ready", function() {
     pins: ['GPIO25', 'GPIO24', 'GPIO23', 'GPIO17', 'GPIO27', 'GPIO22'],
   });
 
+  /*var frame = 1;
+  var frames = [":runninga:", ":runningb:"];
+  var row = 0;
+  var col = 0;*/
+
+  var multi = new five.Multi({
+    controller: "BMP080"
+  });
+  var temp, pressure, altitute;
+  multi.on("change", function() {
+    temp = this.thermometer.celsius;
+    pressure = this.barometer.pressure;
+    altitute = this.altimeter.meters;
+  });
+
+  var runner = Runner(lcd);
+
+  
+  /*
+  lcd.useChar("runninga");
+  lcd.useChar("runningb");  
+
+  this.loop(300, function() {
+    lcd.clear().cursor(row, col).print(
+      frames[frame ^= 1]
+    );
+
+    if (++col === lcd.cols) {
+      col = 0;
+      if (++row === lcd.rows) {
+        row = 0;
+      }
+    }
+  });*/
+
+  board.loop(300, function(stop) {
+    runned.next();
+  });
+
+});
+
+function Runner(lcd) {
   var frame = 1;
   var frames = [":runninga:", ":runningb:"];
   var row = 0;
@@ -26,17 +68,31 @@ board.on("ready", function() {
   lcd.useChar("runninga");
   lcd.useChar("runningb");
 
-  this.loop(300, function() {
-    lcd.clear().cursor(row, col).print(
-      frames[frame ^= 1]
-    );
+  var stop = false;
 
-    if (++col === lcd.cols) {
-      col = 0;
-      if (++row === lcd.rows) {
-        row = 0;
+  return {
+    next() {
+      if (stop) {
+        return;
+      };
+
+      lcd.clear().cursor(row, col).print(
+        frames[frame ^= 1]
+      );
+
+      if (++col === lcd.cols) {
+        col = 0;
+        if (++row === lcd.rows) {
+          row = 0;
+        }
       }
+    },
+    stop() {
+      stop = true;
+    },
+    run() {
+      stop = false;
     }
-  });
-});
+  }
+}
 

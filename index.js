@@ -16,7 +16,7 @@ board.on("ready", function() {
 
   // init widgets
   var runner = Runner(lcd);
-  var sensor = Sensor_bmp080(multi);
+  var sensor = Sensor_bmp080(lcd, multi);
 
   var widgets = [ runner, sensor ];
   var currentWidget = 0;
@@ -36,7 +36,7 @@ board.on("ready", function() {
   });
 
 });
-function Sensor_bmp080(multi) {
+function Sensor_bmp080(lcd, multi) {
   var temp, pressure, altitute;
   multi.on("change", function() {
     temp = this.thermometer.celsius;

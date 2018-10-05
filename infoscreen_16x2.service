@@ -1,0 +1,12 @@
+[Unit]
+Description=Info Screen 16x2 Service
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/info_screen_16x2
+ExecStart=/usr/local/bin/npm start 
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target

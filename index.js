@@ -32,9 +32,9 @@ board.on("ready", function() {
   var stopPresentatoin = () => {
     clearInterval(presentationInterval);
   }
-  // this.repl.inject({
-  //   lcd, runner, sensor, stopPresentatoin
-  // });
+  /* this.repl.inject({
+    lcd, runner, sensor, stopPresentatoin
+  }); */
 
 });
 

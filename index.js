@@ -1,7 +1,7 @@
 var five = require("johnny-five");
 var Raspi = require("raspi-io");
 var board = new five.Board({
-	io: new Raspi()
+  io: new Raspi()
 });
 
 board.on("ready", function() {
@@ -14,51 +14,26 @@ board.on("ready", function() {
     controller: "BMP180"
   });
 
-  /*var frame = 1;
-  var frames = [":runninga:", ":runningb:"];
-  var row = 0;
-  var col = 0;*/
-
-  /*var multi = new five.Multi({
-    controller: "BMP180"
-  });
-  var temp, pressure, altitute;
-  multi.on("change", function() {
-    temp = this.thermometer.celsius;
-    pressure = this.barometer.pressure;
-    altitute = this.altimeter.meters;
-  });*/
-
+  // init widgets
   var runner = Runner(lcd);
   var sensor = Sensor_bmp080(multi);
 
+  var widgets = [ runner, sensor ];
+  var currentWidget = 0;
+  var presentationInterval = setInterval(() => {
+   widgets[currentWidget].stop();
+   if (++currentWidget > widgets.length) {
+    currentWidget = 0;
+   }
+   widgets[currentWidget].run();
+  }, 5000);
 
-  /*
-  lcd.useChar("runninga");
-  lcd.useChar("runningb");
-
-  this.loop(300, function() {
-    lcd.clear().cursor(row, col).print(
-      frames[frame ^= 1]
-    );
-
-    if (++col === lcd.cols) {
-      col = 0;
-      if (++row === lcd.rows) {
-        row = 0;
-      }
-    }
-  });*/
-
-    var widgets = [ runner, sensor ];
-    var currentWidget = 0;
-    setInterval(() => {
-     widgets[currentWidget].stop();
-     currentWidget = currentWidget+1 > widgets.length ? 0 : currentWidget + 1;
-    }, 5000);
-    this.repl.inject({
-        lcd, runner, sensor
-    });
+  var stopPresentatoin = () => {
+    clearInterval(presentationInterval);
+  }
+  this.repl.inject({
+      lcd, runner, sensor, stopPresentatoin
+  });
 
 });
 function Sensor_bmp080(multi) {

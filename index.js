@@ -204,13 +204,15 @@ function Runner(lcd) {
 function clockWidget(lcd) {
   var date = new Date();
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const days = ['Sun','Mon, Tue, Wed, Thu, Fri, Sat, Sun'];
   var currentDate = date.getDate();
+  var currentDay = days[date.getDay()];
   var currentMonth = months[date.getMonth()];
   var currentHour = date.getHours();
   var currentMinute = date.getHours();
   const update = () => {
     lcd.clear();
-    lcd.print(`${currentMonth} ${currentDate}`);
+    lcd.print(`${currentMonth} ${currentDate}, ${currentDay}`);
     lcd.cursor(1, 0);
     lcd.print(`${currentHour} : ${currentMinute}`);
   }

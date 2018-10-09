@@ -14,7 +14,7 @@ board.on("ready", function() {
 
   // init widgets
   var runner = Runner(lcd);
-  var sensor = Sensor_dht11(lcd);
+  // var sensor = Sensor_dht11(lcd);
 
   var widgets = [ runner/*, sensor*/ ];
 

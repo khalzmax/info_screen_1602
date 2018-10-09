@@ -204,9 +204,9 @@ function Runner(lcd) {
 function clockWidget(lcd) {
   var date = new Date();
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const days = ['Sun','Mon, Tue, Wed, Thu, Fri, Sat, Sun'];
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   var currentDate = date.getDate();
-  var currentDay = days[date.getDay()];
+  var currentDay = days[date.getUTCDay()];
   var currentMonth = months[date.getMonth()];
   var currentHour = date.getHours();
   var currentMinute = date.getHours();

@@ -125,26 +125,27 @@ function Sensor_bmp080(lcd) {
       lcd.cursor(1, 0);
       lcd.print(`${temp} C   ${pressure} Pa`);
     };
-    var screen2 = function() {
+    /* var screen2 = function() {
       lcd.clear();
       lcd.print("Altitute");
       lcd.cursor(1, 0);
       lcd.print(`${altitute} m`);
     }
-    var currentScreen = 0;
+    var currentScreen = 0; */
     return {
         stop() {
           stopFlag = true;
         },
         run() {
           stopFlag = false;
-          return board.loop(1000, function(stopLoop) {
+          return board.loop(3000, function(stopLoop) {
             if (stopFlag) {
               stopLoop();
               return;
             }
-            currentScreen ? screen2() : screen1();
-            currentScreen = !currentScreen;
+            screen1();
+            /* currentScreen ? screen2() : screen1();
+            currentScreen = !currentScreen; */
           });
         }
     }

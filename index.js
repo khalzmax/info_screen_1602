@@ -14,7 +14,7 @@ board.on("ready", function() {
 
   // init widgets
   var runner = Runner(lcd);
-  var sensor = Sensor_dht11(lcd);
+  var sensor = Sensor_ds18b20(lcd);
 
   var widgets = [ runner, sensor  ];
 
@@ -38,22 +38,22 @@ board.on("ready", function() {
 
 });
 
-function Sensor_dht11(lcd) {
-  var multi = new five.Multi({
-    controller: "DHT11_I2C_NANO_BACKPACK"
+function Sensor_ds18b20(lcd) {
+  var thermometer = new five.Thermometer({
+    controller: "DS18B20",
+    pin: 'GPIO04'
   });
-  var temp, pressure, altitute;
-  multi.on("change", function () {
-    temp = this.thermometer.celsius.toFixed(0);
-    humidity = this.hygrometer.relativeHumidity.toFixed(0);
+  var temp;
+  thermometer.on("change", function () {
+    temp = this.celsius.toFixed(0);
   });
 
   var stopFlag;
   var next = function () {
     lcd.clear();
-    lcd.print("Temp   Humidity");
+    lcd.print("Temperature");
     lcd.cursor(1, 0);
-    lcd.print(`${temp} C   ${humidity}%`);
+    lcd.print(`${temp} C   `);
   }
   return {
     stop() {

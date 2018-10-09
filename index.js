@@ -14,9 +14,9 @@ board.on("ready", function() {
 
   // init widgets
   var runner = Runner(lcd);
-  var sensor = Sensor_bmp080(lcd);
+  var sensor = Sensor_dht11(lcd);
 
-  var widgets = [ runner, sensor ];
+  var widgets = [ runner, sensor  ];
 
   var currentWidget = 0;
 
@@ -38,7 +38,42 @@ board.on("ready", function() {
 
 });
 
+function Sensor_dht11(lcd) {
+  var multi = new five.Multi({
+    controller: "DHT11_I2C_NANO_BACKPACK"
+  });
+  var temp, pressure, altitute;
+  multi.on("change", function () {
+    temp = this.thermometer.celsius.toFixed(0);
+    humidity = this.hygrometer.relativeHumidity.toFixed(0);
+  });
 
+  var stopFlag;
+  var next = function () {
+    lcd.clear();
+    lcd.print("Temp   Humidity");
+    lcd.cursor(1, 0);
+    lcd.print(`${temp} C   ${humidity}%`);
+  }
+  return {
+    stop() {
+      stopFlag = true;
+    },
+    run() {
+      stopFlag = false;
+      return board.loop(1000, function (stopLoop) {
+        if (stopFlag) {
+          stopLoop();
+          return;
+        }
+        next();
+      });
+    }
+  }
+
+}
+
+/* 
 function Sensor_bmp080(lcd) {
   var multi = new five.Multi({
     controller: "BMP180"
@@ -74,7 +109,7 @@ function Sensor_bmp080(lcd) {
     }
 
 }
-
+ */
 function Runner(lcd) {
   var frame = 1;
   var frames = [":runninga:", ":runningb:"];

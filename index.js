@@ -14,9 +14,9 @@ board.on("ready", function() {
 
   // init widgets
   var runner = Runner(lcd);
-  // var sensor = Sensor_dht11(lcd);
+  var sensor = Sensor_bmp080(lcd);
 
-  var widgets = [ runner/*, sensor*/ ];
+  var widgets = [ runner, sensor ];
 
   var currentWidget = 0;
 
@@ -37,7 +37,7 @@ board.on("ready", function() {
   }); */
 
 });
-
+/*
 function Sensor_dht11(lcd) {
   var multi = new five.Multi({
     controller: "DHT11_I2C_NANO_BACKPACK"
@@ -72,7 +72,7 @@ function Sensor_dht11(lcd) {
   }
 }
 
-/* function Sensor_ds18b20(lcd) {
+function Sensor_ds18b20(lcd) {
   var thermometer = new five.Thermometer({
     controller: "DS18B20",
     pin: 'GPIO04'
@@ -107,7 +107,7 @@ function Sensor_dht11(lcd) {
 
 } */
 
-/* function Sensor_bmp080(lcd) {
+function Sensor_bmp080(lcd) {
   var multi = new five.Multi({
     controller: "BMP180"
   });
@@ -119,12 +119,19 @@ function Sensor_dht11(lcd) {
   });
 
   var stopFlag;
-    var next = function() {
+    var screen1 = function() {
       lcd.clear();
       lcd.print("Temp   Pressure");
       lcd.cursor(1, 0);
       lcd.print(`${temp} C   ${pressure} Pa`);
+    };
+    var screen2 = function() {
+      lcd.clear();
+      lcd.print("Altitute");
+      lcd.cursor(1, 0);
+      lcd.print(`${altitute} m`);
     }
+    var currentScreen = 0;
     return {
         stop() {
           stopFlag = true;
@@ -136,12 +143,13 @@ function Sensor_dht11(lcd) {
               stopLoop();
               return;
             }
-            next();
+            currentScreen ? screen2() : screen1();
+            currentScreen = !currentScreen;
           });
         }
     }
-} */
-
+}
+;
 function Runner(lcd) {
   var frame = 1;
   var frames = [":runninga:", ":runningb:"];

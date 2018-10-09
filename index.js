@@ -15,8 +15,9 @@ board.on("ready", function() {
   // init widgets
   var runner = Runner(lcd);
   var sensor = Sensor_bmp080(lcd);
+  var clock = clockWidget(lcd);
 
-  var widgets = [ runner, sensor ];
+  var widgets = [runner, sensor, clock ];
 
   var currentWidget = 0;
 
@@ -200,3 +201,47 @@ function Runner(lcd) {
   }
 }
 
+function clockWidget(lcd) {
+  var date = new Date();
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var currentDate = date.getDate();
+  var currentMonth = months[date.getMonth()];
+  var currentHour = date.getHours();
+  var currentMinute = date.getHours();
+  const update = () => {
+    lcd.clear();
+    lcd.print(`${currentMonth} ${currentDate}`);
+    lcd.cursor(1, 0);
+    lcd.print(`${currentHour} : ${currentMinute}`);
+  }
+  return new widget({
+    name: 'clock widget',
+    update,
+    timeout: 3000
+  })
+
+}
+
+function widget(config = {}) {
+  var loopTimeout = config.timeout || 1000;
+  var update = config.update || (() => console.error('no update fn for widget %s detected', config.name));
+  var stopFlag = false;
+  if (typeof config.init === 'function') {
+    config.init.apply(config);
+  }
+  return {
+    stop() {
+      stopFlag = true;
+    },
+    run() {
+      stopFlag = false;
+      return board.loop(loopTimeout, function (stopLoop) {
+        if (stopFlag) {
+          stopLoop();
+          return;
+        }
+        update();
+      });
+    }
+  }
+}

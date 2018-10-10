@@ -210,19 +210,24 @@ function Runner(lcd) {
 }
 
 function clockWidget(lcd) {
-  var date = new Date();
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  var currentDate = date.getDate();
-  var currentDay = days[date.getUTCDay()];
-  var currentMonth = months[date.getMonth()];
-  var currentHour = date.getHours();
-  var currentMinute = date.getHours();
+  const getTime = () => {
+    let date = new Date();
+    return {
+      currentDate: date.getDate(),
+      currentDay: days[date.getUTCDay()],
+      currentMonth: months[date.getMonth()],
+      currentHour: date.getHours(),
+      currentMinute: date.getHours()
+    }
+  }
   const update = () => {
+    let time = getTime();
     lcd.clear();
-    lcd.print(`  ${currentMonth} ${currentDate},  ${currentDay}`);
+    lcd.print(`  ${time.currentMonth} ${time.currentDate},  ${time.currentDay}`);
     lcd.cursor(1, 5);
-    lcd.print(`${currentHour} : ${currentMinute}`);
+    lcd.print(`${time.currentHour} : ${time.currentMinute}`);
   }
   return new widget({
     name: 'clock widget',

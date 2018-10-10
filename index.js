@@ -4,6 +4,7 @@ var board = new five.Board({
   io: new Raspi(),
   repl: false
 });
+const WIDGET_TIMEOUT = 10500;
 
 board.on("ready", function() {
 
@@ -15,9 +16,13 @@ board.on("ready", function() {
   // init widgets
   var runner = Runner(lcd);
   var sensor = Sensor_bmp080(lcd);
-  // var clock = clockWidget(lcd);
 
-  var widgets = [runner, sensor/*, clock*/ ];
+  var widgets = [runner, sensor ];
+  // if we have internet then clock synced and clock widget shows real time
+  checkInternet().then( () => {
+    var clock = clockWidget(lcd);
+    widgets.push(clock);
+  })
 
   var currentWidget = 0;
 
@@ -28,12 +33,13 @@ board.on("ready", function() {
         currentWidget = 0;
     }
     widgets[currentWidget].run();
-  }, 10500);
+  }, WIDGET_TIMEOUT);
 
+  /*
   var stopPresentatoin = () => {
     clearInterval(presentationInterval);
   }
-  /* this.repl.inject({
+  this.repl.inject({
     lcd, runner, sensor, stopPresentatoin
   }); */
 
@@ -246,4 +252,16 @@ function widget(config = {}) {
       });
     }
   }
+}
+
+function checkInternet() {
+  return new Promise( function(resolve, rejecet) {
+    require('dns').lookup('google.com', function (err) {
+      if (err && err.code == "ENOTFOUND") {
+        resolve();
+      } else {
+        rejecet();
+      }
+    })
+  })
 }

@@ -212,8 +212,8 @@ function clockWidget(lcd) {
   var currentMinute = date.getHours();
   const update = () => {
     lcd.clear();
-    lcd.print(`${currentMonth} ${currentDate}, ${currentDay}`);
-    lcd.cursor(1, 0);
+    lcd.print(`  ${currentMonth} ${currentDate},  ${currentDay}`);
+    lcd.cursor(1, 5);
     lcd.print(`${currentHour} : ${currentMinute}`);
   }
   return new widget({

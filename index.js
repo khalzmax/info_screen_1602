@@ -22,7 +22,9 @@ board.on("ready", function() {
   checkInternet().then( () => {
     var clock = clockWidget(lcd);
     widgets.push(clock);
-  })
+  }).catch((err) => {
+    console.log("no internet connection found", err);
+  });
 
   var currentWidget = 0;
 
@@ -255,12 +257,13 @@ function widget(config = {}) {
 }
 
 function checkInternet() {
-  return new Promise( function(resolve, rejecet) {
-    require('dns').lookup('google.com', function (err) {
+  var dns = require('dns');
+  return new Promise( function(resolve, reject) {
+    dns.lookup('google.com', function (err) {
       if (err && err.code == "ENOTFOUND") {
-        resolve();
+        reject(err);
       } else {
-        rejecet();
+        resolve();
       }
     })
   })

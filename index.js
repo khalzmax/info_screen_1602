@@ -15,9 +15,9 @@ board.on("ready", function() {
   // init widgets
   var runner = Runner(lcd);
   var sensor = Sensor_bmp080(lcd);
-  var clock = clockWidget(lcd);
+  // var clock = clockWidget(lcd);
 
-  var widgets = [runner, sensor, clock ];
+  var widgets = [runner, sensor/*, clock*/ ];
 
   var currentWidget = 0;
 
